@@ -5,9 +5,6 @@ Created on Mon Sep 20 16:21:25 2021
 @author: NerdyTurkey
 """
 
-import logging
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
 """
 
@@ -38,7 +35,7 @@ The repository is structured as follows:
 try:
     from double_module import double
 except ImportError:
-    logger.warning("Direct import of 'double_module.py' failed !")
+    print("Direct import of 'double_module.py' failed !")
 
 
 # Second, let's try and directly import 'treble_module.py' from the package
@@ -47,7 +44,7 @@ except ImportError:
 try:
     from my_package import treble_module
 except ImportError:
-    logger.warning("Direct import of 'treble_module.py' from 'my_package' failed !")
+    print("Direct import of 'treble_module.py' from 'my_package' failed !")
 
 
 # These both failed because 'double_module.py' and 'my_package' are not in the
@@ -60,13 +57,11 @@ from easy_import import EasyImport
 
 with EasyImport("double_module.py"):
     from double_module import double
-# log the result
-logger.info(double(2))
+print(double(2))
 
 with EasyImport("my_package", is_package=True):
     from my_package import treble_module
-# log the result
-logger.info(treble_module.treble(2))
+print(treble_module.treble(2))
 
 
 """
@@ -107,7 +102,7 @@ If this is the case, then EasyImport will display all the options and allow you 
 choose which one you want to use.
 
 
-In the example below, we want the 'a_script.py' in the 'sub_folder' directory not the 
+In the example below, we want the 'a_script.py' in 'sub_directory'  not the 
 one in 'another_dirctory'.
 
 EasyImport will give us the choice first time we search for it. Then, as before,
@@ -117,5 +112,4 @@ clear_cache=True.
 
 with EasyImport("a_script.py"):
     from a_script import quadruple
-# log the result
-logger.info(quadruple(2))
+print(quadruple(2))

@@ -55,8 +55,6 @@ __version__ = "0.1"
 __author__ = "NerdyTurkey"
 
 
-
-import logging
 import os
 from pathlib import Path
 import json
@@ -151,7 +149,6 @@ class EasyImport:
         self.use_cached = use_cached
         self.clear_cache = clear_cache
         self.verbose = verbose
-        self.logger = logging.getLogger()
 
     def _init(self):
         self.path_inserted = False
@@ -160,13 +157,18 @@ class EasyImport:
         self.cache_fname = (
             PACKAGE_CACHE_FNAME if self.is_package else MODULE_CACHE_FNAME
         )
-
+    
+    def _info(self, info):
+        if self.verbose:
+            print(f"\nINFO: {info}")
+    
+    def _warning(self, warning):
+        """ may upgrade levels of verbose, hence this is not a staticmethod """
+        print(f"\nWARNING: {warning}") 
+        
     def _clear_cache(self):
         with open(self.cache_fname, "w") as f:
             json.dump({}, f)
-
-    def _set_verbose(self):
-        self.logger.setLevel(logging.INFO)
 
     def _get_cached_paths(self):
         try:
@@ -181,13 +183,13 @@ class EasyImport:
 
             if self.path is not None:
                 self.make_search = False
-                self.logger.info("Using cached path.")
+                self._info("Using cached path.")
 
         else:
-            self.logger.info("No paths cached yet.")
+            self._info("No paths cached yet.")
 
     def _get_search_result(self):
-        self.logger.info(f"Searching for {self.name}...")
+        self._info(f"Searching for {self.name}...")
 
         if self.is_package:
             result = find_directory(self.name, search_dir=self.search_dir)
@@ -195,7 +197,7 @@ class EasyImport:
         else:
             result = find_file(self.name, search_dir=self.search_dir)
 
-        self.logger.info("...finished.")
+        self._info("...finished.")
 
         return result
 
@@ -213,11 +215,11 @@ class EasyImport:
             raise ModuleNotFoundError(f"Failed. {self.name} not found")
 
     def _choose_path(self, result):
-        self.logger.warning(f"{self.name} found at multiple locations. Choose path:")
-        self.logger.info("0. Quit")
+        self._warning(f"{self.name} found at multiple locations. Choose path:")
+        self._info("0. Quit")
 
         for i, path in enumerate(result):
-            self.logger.info(f"{i+1}. {path}")
+            self._info(f"{i+1}. {path}")
 
         while True:
 
@@ -225,13 +227,13 @@ class EasyImport:
                 choice = int(input(f"Enter desired path (0 - {len(result)}) :"))
 
             except ValueError:
-                self.logger.warning("Invalid input !")
+                self._warning("Invalid input !")
                 continue
 
             if 0 <= choice <= len(result):
                 break
 
-            self.logger.warning("Invalid choice !")
+            self._warning("Invalid choice !")
 
         if choice == 0:
             raise SystemExit("User quit. No path selected.")
@@ -239,13 +241,13 @@ class EasyImport:
         self.path = str(Path(result[choice - 1]).resolve().parents[0])
 
     def _update_cache(self):
-        self.logger.info("Saving path to cache...")
+        self._info("Saving path to cache...")
         self.cached_paths[self.name] = self.path
 
         with open(self.cache_fname, "w") as f:
             json.dump(self.cached_paths, f)
 
-        self.logger.info("...finished.")
+        self._info("...finished.")
 
     def _update_sys_path(self):
         sys.path.insert(0, self.path)
@@ -253,13 +255,11 @@ class EasyImport:
 
     def __enter__(self):
         """ for context manager - called when entering with block """
+        
         self._init()
 
         if self.clear_cache:
             self._clear_cache()
-
-        if self.verbose:
-            self._set_verbose()
 
         self.cached_paths = self._get_cached_paths()
 
@@ -284,3 +284,4 @@ class EasyImport:
         """ for context manager - called when exitting with block """
         if self.path_inserted:
             sys.path.pop(0)  # remove path to leave sys.path as it was before
+            
