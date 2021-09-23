@@ -2,22 +2,7 @@
 Python imports made easy! Import any module or package from anywhere - as though it was in your current working directory.
 
 ## Installation
-
-Download the zip of the repository.
-
-Run the 
-```python 
-example.py
-```
-file for a quick tutorial.
-
-Then to use in your projects, just copy
-```python
-easy_import.py
-```
-to your working directory.
-
-Will soon be available on PyPI to allow pip install:
+Requires python 3.
 
 ```bash
 pip install easy_import
