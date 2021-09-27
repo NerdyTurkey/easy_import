@@ -2,9 +2,7 @@
 Python imports made easy! Import any module or package from anywhere - as though it was in your current working directory.
 
 ## github
-```bash
-https://github.com/NerdyTurkey/easy_import
-```
+[easy_import on github](https://github.com/NerdyTurkey/easy_import)
 
 ## Installation
 Requires python 3.
